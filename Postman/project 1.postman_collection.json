@@ -1,0 +1,606 @@
+{
+	"info": {
+		"_postman_id": "e321edc4-8a8a-4977-9022-f93eccd53a76",
+		"name": "project 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15088754"
+	},
+	"item": [
+		{
+			"name": "Users API Tests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contains at least one user\", function () {\r",
+							"    var jsonData = pm.response.json(); \r",
+							"    pm.expect(jsonData.length).to.be.above(0); \r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each user has name, email,address, street ,city\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    data.forEach(user => {\r",
+							"        pm.expect(user).to.have.property(\"name\");\r",
+							"        pm.expect(user).to.have.property(\"email\");\r",
+							"        pm.expect(user).to.have.property(\"address\");\r",
+							"        pm.expect(user.address).to.have.property(\"street\");\r",
+							"        pm.expect(user.address).to.have.property(\"city\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All emails are in valid format\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\r",
+							"\r",
+							"    data.forEach(user => {\r",
+							"        pm.expect(user.email).to.match(emailRegex);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Phone numbers are not null\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    data.forEach(user => {\r",
+							"        pm.expect(user.phone).to.not.be.null;\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Zipcodes are valid (5 digits)\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    const zipRegex = /^\\d{5}(-\\d{4})?$/; // يقبل 12345 أو 12345-6789\r",
+							"\r",
+							"    data.forEach(user => {\r",
+							"        pm.expect(user.address.zipcode).to.match(zipRegex);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"No null or undefined values in user fields\", function () {\r",
+							"    const users = pm.response.json();\r",
+							"    \r",
+							"    users.forEach(user => {\r",
+							"        pm.expect(user.name).to.not.be.oneOf([null, undefined]);\r",
+							"        pm.expect(user.email).to.not.be.oneOf([null, undefined]);\r",
+							"        pm.expect(user.address).to.not.be.oneOf([null, undefined]);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All user IDs are unique\", function () {\r",
+							"    const users = pm.response.json();\r",
+							"    const ids = users.map(user => user.id);\r",
+							"    const uniqueIds = new Set(ids);\r",
+							"    \r",
+							"    pm.expect(uniqueIds.size).to.equal(ids.length);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "posts API Tests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each post contains title, body, and userId\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(post) {\r",
+							"        pm.expect(post).to.have.property(\"title\");\r",
+							"        pm.expect(post).to.have.property(\"body\");\r",
+							"        pm.expect(post).to.have.property(\"userId\");\r",
+							"    });\r",
+							"});\r",
+							"pm.test(\"Each post's title, body, and userId are not empty\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(post) {\r",
+							"        pm.expect(post.title).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(post.body).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(post.userId).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"    });\r",
+							"});\r",
+							"pm.test(\"Each post's title is a string, body is a string, userId is a number\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(post) {\r",
+							"        pm.expect(post.title).to.be.a('string');\r",
+							"        pm.expect(post.body).to.be.a('string');\r",
+							"        pm.expect(post.userId).to.be.a('number');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/posts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Comments API Tests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each comment contains postId, id, name, email, and body\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(comment) {\r",
+							"        pm.expect(comment).to.have.property(\"postId\");\r",
+							"        pm.expect(comment).to.have.property(\"id\");\r",
+							"        pm.expect(comment).to.have.property(\"name\");\r",
+							"        pm.expect(comment).to.have.property(\"email\");\r",
+							"        pm.expect(comment).to.have.property(\"body\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each comment's fields are not empty\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(comment) {\r",
+							"        pm.expect(comment.name).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(comment.email).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(comment.body).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each comment's name and email are strings, postId is a number\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(comment) {\r",
+							"        pm.expect(comment.name).to.be.a('string');\r",
+							"        pm.expect(comment.email).to.be.a('string');\r",
+							"        pm.expect(comment.body).to.be.a('string');\r",
+							"        pm.expect(comment.postId).to.be.a('number');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/comments",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "albums API Tests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each comment contains userId, id, title\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(album) {\r",
+							"        pm.expect(album).to.have.property(\"userId\");\r",
+							"        pm.expect(album).to.have.property(\"id\");\r",
+							"        pm.expect(album).to.have.property(\"title\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each album's fields are not empty\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(album) {\r",
+							"        pm.expect(album.title).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(album.id).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(album.userId).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each album's id ,title, userId is a value\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(comment) {\r",
+							"        pm.expect(comment.title).to.be.a('string');\r",
+							"        pm.expect(comment.id).to.be.a('number');\r",
+							"        pm.expect(comment.userId).to.be.a('number');\r",
+							"\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/albums",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"albums"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "photos API Test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Each photo contains albumId, id, title, url, and thumbnailUrl\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(photo) {\r",
+							"        pm.expect(photo).to.have.property(\"albumId\");\r",
+							"        pm.expect(photo).to.have.property(\"id\");\r",
+							"        pm.expect(photo).to.have.property(\"title\");\r",
+							"        pm.expect(photo).to.have.property(\"url\");\r",
+							"        pm.expect(photo).to.have.property(\"thumbnailUrl\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each photo's fields are not empty\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(photo) {\r",
+							"        pm.expect(photo.title).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"        pm.expect(photo.url).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"    });\r",
+							"});\r",
+							"pm.test(\"Each photo's fields have correct data types\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(photo) {\r",
+							"        pm.expect(photo.albumId).to.be.a('number');\r",
+							"        pm.expect(photo.id).to.be.a('number');\r",
+							"        pm.expect(photo.title).to.be.a('string');\r",
+							"        pm.expect(photo.url).to.be.a('string');\r",
+							"        pm.expect(photo.thumbnailUrl).to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/photos",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"photos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "todos API Test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Each todo contains userId, id, title, and completed\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(todo) {\r",
+							"        pm.expect(todo).to.have.property(\"userId\");\r",
+							"        pm.expect(todo).to.have.property(\"id\");\r",
+							"        pm.expect(todo).to.have.property(\"title\");\r",
+							"        pm.expect(todo).to.have.property(\"completed\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each todo's fields are not empty\", function () {\r",
+							"    var responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(function(todo) {\r",
+							"        pm.expect(todo.title).to.not.be.oneOf([null, undefined, \"\"]);\r",
+							"    });\r",
+							"});\r",
+							"pm.test(\"Each todo has correct data types\", function () {\r",
+							"    const todos = pm.response.json();\r",
+							"\r",
+							"    todos.forEach(function(todo) {\r",
+							"        pm.expect(todo.userId).to.be.a('number');\r",
+							"        pm.expect(todo.id).to.be.a('number');\r",
+							"        pm.expect(todo.title).to.be.a('string');\r",
+							"        pm.expect(todo.completed).to.be.a('boolean');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/todos",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /posts/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Post with ID 1 has correct structure\", function () {\r",
+							"    var post = pm.response.json();\r",
+							"    pm.expect(post).to.have.property(\"userId\");\r",
+							"    pm.expect(post).to.have.property(\"id\", 1);\r",
+							"    pm.expect(post.title).to.be.a(\"string\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/posts/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"POST returns the same data with an id\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res).to.have.property(\"id\");\r",
+							"    pm.expect(res.title).to.eql(\"Test title\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Test title\",\r\n  \"body\": \"Test body\",\r\n  \"userId\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jsonplaceholder.typicode.com/posts",
+					"protocol": "https",
+					"host": [
+						"jsonplaceholder",
+						"typicode",
+						"com"
+					],
+					"path": [
+						"posts"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "\"Test title\"",
+							"disabled": true
+						},
+						{
+							"key": "body",
+							"value": "\"Test body\"",
+							"disabled": true
+						},
+						{
+							"key": "userId",
+							"value": "5",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Delete request returns empty object\", function () {\r",
+							"    pm.expect(pm.response.json()).to.eql({});\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/posts/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upsate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"PATCH request updates the post's title and returns updated data\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"\r",
+							"    pm.expect(res.id).to.eql(1); \r",
+							"\r",
+							"    pm.expect(res.title).to.eql(\"Partially Updated Test title\");\r",
+							"\r",
+							"    pm.expect(res.body).to.not.eql(\"Updated Test body\"); // مفروض ما يتغيرش\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Partially Updated Test title\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/posts/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
